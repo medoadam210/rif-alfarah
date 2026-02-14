@@ -1,170 +1,799 @@
+ <!doctype html>
+<html lang="ar" dir="rtl" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سحب جوائز مؤسسة ريف الفرح للخياطة</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Tajawal', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes confetti {
+      0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); }
+    }
+    
+    @keyframes spin-wheel {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(1800deg); }
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes slide-up {
+      0% { transform: translateY(30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    .float-animation { animation: float 3s ease-in-out infinite; }
+    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+    .bounce-in { animation: bounce-in 0.6s ease-out forwards; }
+    .slide-up { animation: slide-up 0.5s ease-out forwards; }
+    
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: confetti 3s linear forwards;
+    }
+    
+    .gradient-gold {
+      background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 50%, #D4AF37 100%);
+    }
+    
+    .gradient-maroon {
+      background: linear-gradient(135deg, #800020 0%, #A0153E 50%, #800020 100%);
+    }
+    
+    .text-gradient-gold {
+      background: linear-gradient(135deg, #D4AF37, #F4E4BA, #D4AF37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .pattern-overlay {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23D4AF37' fill-opacity='0.05'/%3E%3C/svg%3E");
+    }
+    
+    .sudanese-border {
+      border: 3px solid #D4AF37;
+      border-image: repeating-linear-gradient(45deg, #D4AF37, #D4AF37 10px, #800020 10px, #800020 20px) 3;
+    }
+    
+    .input-style {
+      background: rgba(255,255,255,0.95);
+      border: 2px solid #D4AF37;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .input-style:focus {
+      border-color: #800020;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+      outline: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #D4AF37 0%, #B8962E 100%);
+      color: #800020;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.5);
+    }
+    
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .card-style {
+      background: rgba(255,255,255,0.98);
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(128, 0, 32, 0.2);
+      border: 2px solid #D4AF37;
+    }
+    
+    .winner-card {
+      background: linear-gradient(145deg, #800020 0%, #5C0015 100%);
+      border: 4px solid #D4AF37;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    
+    .social-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .social-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .wheel-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 0 auto;
+    }
+    
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid #D4AF37;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .wheel-pointer {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 30px solid #D4AF37;
+      z-index: 10;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 16px 32px;
+      border-radius: 12px;
+      z-index: 1000;
+      animation: slide-up 0.3s ease-out;
+    }
+    
+    .toast-success {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+    }
+    
+    .toast-error {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: white;
+    }
+    
+    .participant-count {
+      background: linear-gradient(135deg, #D4AF37, #B8962E);
+      color: #800020;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
 
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>سحب ريف الفرح</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="/_sdk/element_sdk.js"></script>
-<script src="/_sdk/data_sdk.js"></script>
-</head>
-
-<body class="bg-[#800020] min-h-screen flex items-center justify-center p-4">
-
-<div id="app" class="bg-white w-full max-w-md rounded-xl p-6 text-center">
-
-  <h1 id="shopName" class="text-2xl font-bold mb-2">
-    مؤسسة ريف الفرح للخياطة
-  </h1>
-
-  <p id="welcomeMsg" class="mb-2">
-    أهلاً بكم في افتتاحنا الكبير 🎉
-  </p>
-
-  <p id="prizeText" class="font-semibold text-amber-700 mb-4">
-    سجّل الآن واربح جوائز قيّمة!
-  </p>
-
-  <form id="form" class="space-y-3">
-
-    <input
-      id="nameInput"
-      class="w-full border rounded p-2"
-      placeholder="الاسم الكامل"
-      required
-    >
-
-    <div class="flex gap-2">
-      <div class="border rounded p-2 bg-gray-100">+966</div>
-      <input
-        id="phoneInput"
-        class="flex-1 border rounded p-2"
-        placeholder="5XXXXXXXX"
-        required
-      >
+    .tab-btn {
+      padding: 12px 24px;
+      border-radius: 10px 10px 0 0;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .tab-btn.active {
+      background: #D4AF37;
+      color: #800020;
+    }
+    
+    .tab-btn:not(.active) {
+      background: rgba(212, 175, 55, 0.2);
+      color: #D4AF37;
+    }
+    
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .admin-table th {
+      background: #800020;
+      color: #D4AF37;
+      padding: 12px;
+      text-align: right;
+    }
+    
+    .admin-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .admin-table tr:hover {
+      background: rgba(212, 175, 55, 0.1);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="min-h-full w-full gradient-maroon pattern-overlay overflow-auto"><!-- Main Registration View -->
+   <div id="mainView" class="min-h-full flex flex-col items-center justify-start py-8 px-4"><!-- Header with Logo -->
+    <header class="text-center mb-6 slide-up">
+     <div class="w-32 h-32 mx-auto mb-4 rounded-full gradient-gold p-1 pulse-glow float-animation">
+      <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+       <img src="c:\Users\USER\Downloads\IMG_20260205_022531_624.png" class="w-24 h-24"><defs>
+         <lineargradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#D4AF37" />
+          <stop offset="50%" style="stop-color:#b5943f" />
+          <stop offset="100%" style="stop-color:#D4AF37" />
+         </lineargradient>
+        </defs> <circle cx="50" cy="50" r="45" fill="#800020" /> <path d="M50 15 L55 35 L75 35 L60 48 L65 68 L50 55 L35 68 L40 48 L25 35 L45 35 Z" fill="url(#goldGrad)" /> <text x="50" y="88" text-anchor="middle" fill="#D4AF37" font-size="10" font-weight="bold">
+        </text>
+      </img>
+      </div>
+     </div>
+     <h1 id="shopNameDisplay" class="text-3xl md:text-4xl font-extrabold text-gradient-gold mb-2">مؤسسة ريف الفرح للخياطة</h1>
+     <p id="welcomeDisplay" class="text-lg text-amber-200 mb-2">أهلاً بكم في افتتاحنا الكبير! 🎊</p>
+     <div class="flex items-center justify-center gap-2 text-amber-100"><span>📍</span> <span>حي القزاز - سوق الدمام الشعبي - جوار مقهى إيمان</span>
+     </div>
+    </header><!-- Prize Banner -->
+    <div class="w-full max-w-md mb-6 slide-up" style="animation-delay: 0.1s">
+     <div class="gradient-gold rounded-2xl p-1">
+      <div class="bg-gradient-to-r from-amber-900 to-amber-800 rounded-xl p-4 text-center"><span class="text-4xl mb-2 block">🎁</span>
+       <h2 id="prizeDisplay" class="text-xl font-bold text-amber-100">سجّل الآن واربح جوائز قيّمة!</h2>
+       <p class="text-amber-200 text-sm mt-2">السحب كل 10 أيام على   جلاليب او على الله </p>
+      </div>
+     </div>
+    </div><!-- Registration Form -->
+    <div id="registrationCard" class="w-full max-w-md card-style p-6 mb-6 slide-up" style="animation-delay: 0.2s">
+     <div class="text-center mb-6"><span class="text-5xl mb-3 block">🎰</span>
+      <h3 class="text-2xl font-bold text-amber-900">سجّل للفوز!</h3>
+      <p class="text-amber-700 mt-1">أدخل بياناتك للمشاركة في السحب</p>
+     </div>
+     <form id="registrationForm" class="space-y-4">
+      <div><label class="block text-amber-900 font-semibold mb-2">الاسم الكامل *</label> <input type="text" id="nameInput" class="w-full input-style px-4 py-3 text-lg" placeholder="أدخل اسمك الكريم" required>
+      </div>
+      <div><label class="block text-amber-900 font-semibold mb-2">رقم الواتساب *</label>
+       <div class="flex gap-2">
+        <div class="input-style px-3 py-3 bg-amber-50 text-amber-800 font-bold flex items-center">
+         +966
+        </div><input type="tel" id="phoneInput" class="flex-1 input-style px-4 py-3 text-lg" placeholder="5XXXXXXXX" pattern="[0-9]{9,10}" required>
+       </div>
+      </div><button type="submit" id="submitBtn" class="w-full btn-primary text-xl mt-6"> 🎯 سجّل الآن! </button>
+     </form>
+     <div id="participantCounter" class="text-center mt-6"><span class="participant-count"> <span id="countNumber">0</span> مشارك حتى الآن </span>
+     </div>
+    </div><!-- Already Registered Message -->
+    <div id="alreadyRegistered" class="w-full max-w-md card-style p-6 mb-6 hidden">
+     <div class="text-center"><span class="text-6xl mb-4 block">✅</span>
+      <h3 class="text-2xl font-bold text-green-700 mb-2">تم تسجيلك بنجاح!</h3>
+      <p class="text-amber-700">أنت مسجل في السحب. ترقب إعلان الفائزين!</p>
+      <p class="text-amber-600 mt-4 text-sm">شارك مع أصدقائك لزيادة فرصهم بالفوز 👇</p>
+     </div>
+    </div><!-- Social Share -->
+    <div class="w-full max-w-md mb-6 slide-up" style="animation-delay: 0.3s">
+     <p class="text-center text-amber-200 mb-4 font-semibold">شارك مع أصدقائك! 📱</p>
+     <div class="flex justify-center gap-4"><button id="shareWhatsapp" class="social-btn" style="background: #25D366;">
+       <svg class="w-6 h-6 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+       </svg></button> <button id="shareTwitter" class="social-btn" style="background: #1DA1F2;">
+       <svg class="w-6 h-6 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+       </svg></button> <button id="shareFacebook" class="social-btn" style="background: #1877F2;">
+       <svg class="w-6 h-6 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+       </svg></button> <button id="copyLink" class="social-btn" style="background: #6B7280;">
+       <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+       </svg></button>
+     </div>
+    </div><!-- Contact Info -->
+    <div class="text-center text-amber-200 slide-up" style="animation-delay: 0.4s">
+     <p class="mb-2">📞 للتواصل والاستفسار</p><a href="tel:0557186043" class="text-2xl font-bold text-gradient-gold hover:underline">0557186043</a>
+    </div><!-- Admin Button --> <button id="adminToggle" class="mt-8 text-amber-400 text-sm underline opacity-60 hover:opacity-100 transition-opacity"> لوحة الإدارة </button>
+   </div><!-- Admin Panel -->
+   <div id="adminPanel" class="hidden min-h-full py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+     <div class="card-style p-6">
+      <div class="flex items-center justify-between mb-6">
+       <h2 class="text-2xl font-bold text-amber-900">🔐 لوحة الإدارة</h2><button id="closeAdmin" class="text-amber-600 hover:text-amber-800">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg></button>
+      </div><!-- Tabs -->
+      <div class="flex gap-2 mb-6"><button class="tab-btn active" data-tab="participants">المشاركين</button> <button class="tab-btn" data-tab="winners">الفائزين</button> <button class="tab-btn" data-tab="draw">السحب</button>
+      </div><!-- Participants Tab -->
+      <div id="participantsTab" class="tab-content">
+       <div class="bg-amber-50 rounded-lg p-4 mb-4">
+        <div class="flex items-center justify-between"><span class="font-bold text-amber-900">إجمالي المشاركين: <span id="totalParticipants">0</span></span> <button id="exportData" class="btn-primary py-2 px-4 text-sm">📥 تصدير البيانات</button>
+        </div>
+       </div>
+       <div class="overflow-x-auto max-h-96 overflow-y-auto">
+        <table class="admin-table">
+         <thead class="sticky top-0">
+          <tr>
+           <th>#</th>
+           <th>زبون - الاسم</th>
+           <th>رقم الواتساب</th>
+           <th>تاريخ التسجيل</th>
+           <th>الحالة</th>
+          </tr>
+         </thead>
+         <tbody id="participantsTable"></tbody>
+        </table>
+       </div>
+      </div><!-- Winners Tab -->
+      <div id="winnersTab" class="tab-content hidden">
+       <div id="winnersList" class="space-y-4"></div>
+       <div id="noWinners" class="text-center py-12 text-amber-600"><span class="text-6xl block mb-4">🏆</span>
+        <p>لم يتم اختيار فائزين بعد</p>
+       </div>
+      </div><!-- Draw Tab -->
+      <div id="drawTab" class="tab-content hidden">
+       <div class="text-center">
+        <div class="wheel-container mb-6">
+         <div class="wheel-pointer"></div>
+         <div id="wheel" class="wheel gradient-gold flex items-center justify-center">
+          <div class="w-4/5 h-4/5 rounded-full bg-amber-900 flex items-center justify-center"><span class="text-6xl">🎰</span>
+          </div>
+         </div>
+        </div><button id="spinBtn" class="btn-primary text-xl px-12 py-4"> 🎯 اسحب الفائز! </button>
+        <p class="mt-4 text-amber-700 text-sm">سيتم اختيار فائز عشوائي من بين جميع المشاركين</p>
+       </div>
+      </div>
+     </div>
     </div>
+   </div><!-- Winner Announcement Modal -->
+   <div id="winnerModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
+    <div id="confettiContainer"></div>
+    <div class="winner-card w-full max-w-md p-8 text-center bounce-in">
+     <div class="mb-4"><span class="text-6xl">🎉</span>
+     </div>
+     <h2 class="text-2xl font-bold text-amber-300 mb-2">مبروووك! 🎊</h2>
+     <div class="w-24 h-24 mx-auto my-4 rounded-full gradient-gold p-1">
+      <div class="w-full h-full rounded-full bg-white flex items-center justify-center"><span class="text-4xl">🏆</span>
+      </div>
+     </div>
+     <h3 class="text-3xl font-extrabold text-white mb-2" id="winnerName">اسم الفائز</h3>
+     <p class="text-amber-200 mb-6">ربح جائزة من مؤسسة ريف الفرح للخياطة!</p>
+     <div class="bg-amber-900/50 rounded-xl p-4 mb-6">
+      <p class="text-amber-200 text-sm mb-1">للتواصل مع المحل</p>
+      <p class="text-2xl font-bold text-gradient-gold">0557186043</p>
+     </div>
+     <div class="flex gap-4 justify-center"><button id="shareWinner" class="btn-primary py-2 px-6">📤 مشاركة</button> <button id="closeWinnerModal" class="bg-amber-800 text-amber-100 py-2 px-6 rounded-xl hover:bg-amber-700 transition">إغلاق</button>
+     </div>
+    </div>
+   </div><!-- Toast Container -->
+   <div id="toastContainer"></div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      shop_name: 'مؤسسة ريف الفرح للخياطة',
+      prize_text: 'سجّل الآن واربح جوائز قيّمة!',
+      welcome_message: 'أهلاً بكم في افتتاحنا الكبير! 🎊',
+      background_color: '#800020',
+      surface_color: '#FFFFFF',
+      text_color: '#78350F',
+      primary_action_color: '#D4AF37',
+      secondary_action_color: '#B8962E'
+    };
 
-    <button
-      class="w-full bg-yellow-400 py-2 rounded font-bold">
-      سجّل الآن
-    </button>
+    let config = { ...defaultConfig };
+    let participants = [];
+    let currentWinner = null;
 
-  </form>
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
 
-  <p class="mt-4 font-bold">
-    عدد المشاركين:
-    <span id="count">0</span>
-  </p>
+    // Confetti effect
+    function createConfetti() {
+      const container = document.getElementById('confettiContainer');
+      container.innerHTML = '';
+      const colors = ['#D4AF37', '#F4E4BA', '#800020', '#FF6B6B', '#4ECDC4', '#FFE66D'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        container.appendChild(confetti);
+      }
+    }
 
-</div>
+    // Update UI based on config
+    function onConfigChange(cfg) {
+      config = { ...defaultConfig, ...cfg };
+      
+      const shopName = config.shop_name || defaultConfig.shop_name;
+      const welcome = config.welcome_message || defaultConfig.welcome_message;
+      const prize = config.prize_text || defaultConfig.prize_text;
+      
+      document.getElementById('shopNameDisplay').textContent = shopName;
+      document.getElementById('welcomeDisplay').textContent = welcome;
+      document.getElementById('prizeDisplay').textContent = prize;
+      
+      // Apply colors
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      
+      document.documentElement.style.setProperty('--bg-color', bgColor);
+      document.getElementById('app').style.background = `linear-gradient(135deg, ${bgColor} 0%, ${adjustColor(bgColor, -20)} 100%)`;
+      
+      document.querySelectorAll('.card-style').forEach(el => {
+        el.style.backgroundColor = surfaceColor;
+      });
+      
+      document.querySelectorAll('.btn-primary').forEach(el => {
+        el.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+      });
+    }
 
-<script>
-/* ===== الإعدادات الافتراضية للكانفا ===== */
+    function adjustColor(color, amount) {
+      const hex = color.replace('#', '');
+      const r = Math.max(0, Math.min(255, parseInt(hex.substr(0, 2), 16) + amount));
+      const g = Math.max(0, Math.min(255, parseInt(hex.substr(2, 2), 16) + amount));
+      const b = Math.max(0, Math.min(255, parseInt(hex.substr(4, 2), 16) + amount));
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
 
-const defaultConfig = {
-  shop_name: "مؤسسة ريف الفرح للخياطة",
-  welcome_message: "أهلاً بكم في افتتاحنا الكبير 🎉",
-  prize_text: "سجّل الآن واربح جوائز قيّمة!"
-};
+    // Render participants table
+    function renderParticipants() {
+      const table = document.getElementById('participantsTable');
+      const countEl = document.getElementById('countNumber');
+      const totalEl = document.getElementById('totalParticipants');
+      
+      countEl.textContent = participants.length;
+      totalEl.textContent = participants.length;
+      
+      if (participants.length === 0) {
+        table.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-amber-600">لا يوجد مشاركين بعد</td></tr>';
+        return;
+      }
+      
+      table.innerHTML = participants.map((p, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>زبون - ${p.name}</td>
+          <td dir="ltr">+966${p.phone}</td>
+          <td>${new Date(p.registeredAt).toLocaleDateString('ar-SA')}</td>
+          <td>
+            ${p.isWinner 
+              ? '<span class="bg-amber-500 text-white px-2 py-1 rounded text-sm">🏆 فائز</span>' 
+              : '<span class="bg-green-500 text-white px-2 py-1 rounded text-sm">مسجل</span>'}
+          </td>
+        </tr>
+      `).join('');
+    }
 
-let participants = [];
+    // Render winners list
+    function renderWinners() {
+      const container = document.getElementById('winnersList');
+      const noWinners = document.getElementById('noWinners');
+      const winners = participants.filter(p => p.isWinner);
+      
+      if (winners.length === 0) {
+        container.innerHTML = '';
+        noWinners.classList.remove('hidden');
+        return;
+      }
+      
+      noWinners.classList.add('hidden');
+      container.innerHTML = winners.map(w => `
+        <div class="bg-gradient-to-r from-amber-100 to-amber-50 rounded-xl p-4 border-2 border-amber-400">
+          <div class="flex items-center gap-4">
+            <span class="text-4xl">🏆</span>
+            <div class="flex-1">
+              <h4 class="font-bold text-amber-900 text-lg">${w.name}</h4>
+              <p class="text-amber-700" dir="ltr">+966${w.phone}</p>
+              <p class="text-amber-600 text-sm">فاز بتاريخ: ${w.winDate ? new Date(w.winDate).toLocaleDateString('ar-SA') : '-'}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
 
-/* ===== تحديث النصوص من لوحة Canva ===== */
+    // Data handler for SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        participants = data || [];
+        renderParticipants();
+        renderWinners();
+      }
+    };
 
-function onConfigChange(cfg){
-  document.getElementById("shopName").textContent =
-    cfg.shop_name || defaultConfig.shop_name;
+    // Check if phone already registered
+    function isPhoneRegistered(phone) {
+      return participants.some(p => p.phone === phone);
+    }
 
-  document.getElementById("welcomeMsg").textContent =
-    cfg.welcome_message || defaultConfig.welcome_message;
+    // Generate share text
+    function getShareText() {
+      const shopName = config.shop_name || defaultConfig.shop_name;
+      return `🎉 شارك في مسابقة ${shopName} واربح جوائز قيمة بمناسبة الافتتاح!\n\n🎁 سجل الآن وادخل السحب على جوائز رائعة!\n\n📍 السوق الشعبي - الدمام\n📞 0557186043`;
+    }
 
-  document.getElementById("prizeText").textContent =
-    cfg.prize_text || defaultConfig.prize_text;
-}
+    // Initialize app
+    async function initApp() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              {
+                get: () => cfg.background_color || defaultConfig.background_color,
+                set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+              },
+              {
+                get: () => cfg.surface_color || defaultConfig.surface_color,
+                set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => cfg.primary_action_color || defaultConfig.primary_action_color,
+                set: (v) => { cfg.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }
+              },
+              {
+                get: () => cfg.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (v) => { cfg.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['shop_name', cfg.shop_name || defaultConfig.shop_name],
+            ['prize_text', cfg.prize_text || defaultConfig.prize_text],
+            ['welcome_message', cfg.welcome_message || defaultConfig.welcome_message]
+          ])
+        });
+      }
 
-/* ===== استقبال البيانات من Data SDK ===== */
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize data SDK');
+        }
+      }
 
-const dataHandler = {
-  onDataChanged(data){
-    participants = data || [];
-    document.getElementById("count").textContent =
-      participants.length;
-  }
-};
+      // Apply initial config
+      onConfigChange(config);
 
-/* ===== تهيئة Canva SDK ===== */
+      // Form submission
+      document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('nameInput').value.trim();
+        const phone = document.getElementById('phoneInput').value.trim().replace(/\D/g, '');
+        
+        if (!name || !phone) {
+          showToast('يرجى إدخال جميع البيانات', 'error');
+          return;
+        }
+        
+        if (phone.length < 9) {
+          showToast('يرجى إدخال رقم واتساب صحيح', 'error');
+          return;
+        }
+        
+        if (isPhoneRegistered(phone)) {
+          showToast('هذا الرقم مسجل مسبقاً!', 'error');
+          document.getElementById('registrationCard').classList.add('hidden');
+          document.getElementById('alreadyRegistered').classList.remove('hidden');
+          return;
+        }
+        
+        if (participants.length >= 999) {
+          showToast('تم الوصول للحد الأقصى من المشاركين', 'error');
+          return;
+        }
+        
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'جاري التسجيل...';
+        
+        const newParticipant = {
+          id: Date.now().toString(),
+          name,
+          phone,
+          registeredAt: new Date().toISOString(),
+          isWinner: false,
+          winDate: ''
+        };
+        
+        if (window.dataSdk) {
+          const result = await window.dataSdk.create(newParticipant);
+          if (result.isOk) {
+            showToast('تم تسجيلك بنجاح! 🎉', 'success');
+            document.getElementById('registrationCard').classList.add('hidden');
+            document.getElementById('alreadyRegistered').classList.remove('hidden');
+          } else {
+            showToast('حدث خطأ، يرجى المحاولة مرة أخرى', 'error');
+          }
+        }
+        
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🎯 سجّل الآن!';
+        e.target.reset();
+      });
 
-if(window.elementSdk){
-  window.elementSdk.init({
-    defaultConfig,
-    onConfigChange,
-    mapToEditPanelValues:(cfg)=> new Map([
-      ["shop_name", cfg.shop_name || defaultConfig.shop_name],
-      ["welcome_message", cfg.welcome_message || defaultConfig.welcome_message],
-      ["prize_text", cfg.prize_text || defaultConfig.prize_text]
-    ])
-  });
-}
+      // Social sharing
+      document.getElementById('shareWhatsapp').addEventListener('click', () => {
+        const text = encodeURIComponent(getShareText());
+        window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer');
+      });
 
-/* ===== تهيئة قاعدة البيانات ===== */
+      document.getElementById('shareTwitter').addEventListener('click', () => {
+        const text = encodeURIComponent(getShareText());
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank', 'noopener,noreferrer');
+      });
 
-(async()=>{
-  if(window.dataSdk){
-    await window.dataSdk.init(dataHandler);
-  }
-})();
+      document.getElementById('shareFacebook').addEventListener('click', () => {
+        const text = encodeURIComponent(getShareText());
+        window.open(`https://www.facebook.com/sharer/sharer.php?quote=${text}`, '_blank', 'noopener,noreferrer');
+      });
 
-/* ===== فحص التكرار ===== */
+      document.getElementById('copyLink').addEventListener('click', () => {
+        const text = getShareText();
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('تم نسخ النص! 📋', 'success');
+        });
+      });
 
-function isRegistered(phone){
-  return participants.some(p => p.phone === phone);
-}
+      // Admin panel
+      document.getElementById('adminToggle').addEventListener('click', () => {
+        document.getElementById('mainView').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+      });
 
-/* ===== تسجيل مشارك ===== */
+      document.getElementById('closeAdmin').addEventListener('click', () => {
+        document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('mainView').classList.remove('hidden');
+      });
 
-document.getElementById("form").addEventListener("submit", async (e)=>{
-  e.preventDefault();
+      // Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById(btn.dataset.tab + 'Tab').classList.remove('hidden');
+        });
+      });
 
-  const name  = nameInput.value.trim();
-  const phone = phoneInput.value.replace(/\D/g,'');
+      // Spin wheel
+      document.getElementById('spinBtn').addEventListener('click', async () => {
+        const eligibleParticipants = participants.filter(p => !p.isWinner);
+        
+        if (eligibleParticipants.length === 0) {
+          showToast('لا يوجد مشاركين للسحب', 'error');
+          return;
+        }
+        
+        const spinBtn = document.getElementById('spinBtn');
+        spinBtn.disabled = true;
+        spinBtn.textContent = 'جاري السحب...';
+        
+        const wheel = document.getElementById('wheel');
+        wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+        wheel.style.transform = `rotate(${1800 + Math.random() * 360}deg)`;
+        
+        setTimeout(async () => {
+          const winnerIndex = Math.floor(Math.random() * eligibleParticipants.length);
+          currentWinner = eligibleParticipants[winnerIndex];
+          
+          // Update winner in database
+          if (window.dataSdk) {
+            const winnerRecord = participants.find(p => p.__backendId === currentWinner.__backendId);
+            if (winnerRecord) {
+              winnerRecord.isWinner = true;
+              winnerRecord.winDate = new Date().toISOString();
+              await window.dataSdk.update(winnerRecord);
+            }
+          }
+          
+          // Show winner modal
+          document.getElementById('winnerName').textContent = currentWinner.name;
+          document.getElementById('winnerModal').classList.remove('hidden');
+          document.getElementById('winnerModal').classList.add('flex');
+          createConfetti();
+          
+          wheel.style.transition = 'none';
+          wheel.style.transform = 'rotate(0deg)';
+          
+          spinBtn.disabled = false;
+          spinBtn.textContent = '🎯 اسحب الفائز!';
+        }, 4000);
+      });
 
-  if(!name || !phone){
-    alert("يرجى إدخال البيانات");
-    return;
-  }
+      // Close winner modal
+      document.getElementById('closeWinnerModal').addEventListener('click', () => {
+        document.getElementById('winnerModal').classList.add('hidden');
+        document.getElementById('winnerModal').classList.remove('flex');
+      });
 
-  if(phone.length < 9){
-    alert("رقم غير صحيح");
-    return;
-  }
+      // Share winner
+      document.getElementById('shareWinner').addEventListener('click', () => {
+        if (!currentWinner) return;
+        const shopName = config.shop_name || defaultConfig.shop_name;
+        const text = `🎉 مبروك للفائز: ${currentWinner.name}\n\nربح جائزة من ${shopName}!\n\n📍 السوق الشعبي - الدمام\n📞 0557186043`;
+        const encoded = encodeURIComponent(text);
+        window.open(`https://wa.me/?text=${encoded}`, '_blank', 'noopener,noreferrer');
+      });
 
-  if(isRegistered(phone)){
-    alert("هذا الرقم مسجل مسبقاً");
-    return;
-  }
+      // Export data
+      document.getElementById('exportData').addEventListener('click', () => {
+        if (participants.length === 0) {
+          showToast('لا توجد بيانات للتصدير', 'error');
+          return;
+        }
+        
+        let csv = 'زبون - الاسم,رقم الواتساب,تاريخ التسجيل,الحالة\n';
+        participants.forEach(p => {
+          csv += `زبون - ${p.name},+966${p.phone},${new Date(p.registeredAt).toLocaleDateString('ar-SA')},${p.isWinner ? 'فائز' : 'مسجل'}\n`;
+        });
+        
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'مشاركين_ريف_الفرح.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('تم تصدير البيانات! 📥', 'success');
+      });
+    }
 
-  const record = {
-    id: Date.now().toString(),
-    name,
-    phone,
-    registeredAt: new Date().toISOString(),
-    isWinner:false
-  };
-
-  const res = await dataSdk.create(record);
-
-  if(res && res.isOk){
-    alert("تم التسجيل بنجاح 🎉");
-    e.target.reset();
-  }else{
-    alert("حدث خطأ أثناء الحفظ");
-  }
-
-});
-</script>
-
-</body>
+    // Start app
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cd7263e63dab315',t:'MTc3MTAxNTMxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
